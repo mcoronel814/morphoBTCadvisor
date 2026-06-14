@@ -127,9 +127,15 @@ Variables:
 ### User Position by Address
 
 ```graphql
-query UserPosition($address: String!, $chainId: Int!, $marketKey: String!) {
-  userByAddress(chainId: $chainId, address: $address) {
-    marketPositions(where: { marketUniqueKey_in: [$marketKey] }) {
+query UserPosition($address: String!, $marketKey: String!) {
+  marketPositions(
+    first: 10
+    where: {
+      marketUniqueKey_in: [$marketKey]
+      userAddress_in: [$address]
+    }
+  ) {
+    items {
       state {
         collateral
         borrowAssets
@@ -137,6 +143,7 @@ query UserPosition($address: String!, $chainId: Int!, $marketKey: String!) {
         collateralUsd
       }
       market {
+        marketId
         collateralAsset { decimals }
         loanAsset { decimals }
       }
@@ -149,7 +156,6 @@ Variables:
 ```json
 {
   "address": "0xYourAddressHere",
-  "chainId": 8453,
   "marketKey": "0x9103c3b4e834476c9a62ea009ba2c884ee42e94e6e314a26f04d312434191836"
 }
 ```

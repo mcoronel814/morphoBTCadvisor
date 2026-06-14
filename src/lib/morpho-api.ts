@@ -26,14 +26,14 @@ async function graphqlQuery<T>(query: string, variables?: Record<string, unknown
     body: JSON.stringify({ query, variables }),
   })
 
-  if (!response.ok) {
-    throw new Error(`Morpho API error: ${response.status} ${response.statusText}`)
-  }
-
   const json: GraphQLResponse<T> = await response.json()
 
   if (json.errors?.length) {
     throw new Error(json.errors.map((e) => e.message).join(', '))
+  }
+
+  if (!response.ok) {
+    throw new Error(`Morpho API error: ${response.status} ${response.statusText}`)
   }
 
   if (!json.data) {
@@ -82,9 +82,15 @@ const MARKET_QUERY = `
 /**
  * Example: Fetch user position by address
  *
- * query UserPosition($address: String!, $chainId: Int!, $marketKey: String!) {
- *   userByAddress(chainId: $chainId, address: $address) {
- *     marketPositions(where: { marketUniqueKey_in: [$marketKey] }) {
+ * query UserPosition($address: String!, $marketKey: String!) {
+ *   marketPositions(
+ *     first: 10
+ *     where: {
+ *       marketUniqueKey_in: [$marketKey]
+ *       userAddress_in: [$address]
+ *     }
+ *   ) {
+ *     items {
  *       state {
  *         collateral
  *         borrowAssets
@@ -92,6 +98,7 @@ const MARKET_QUERY = `
  *         collateralUsd
  *       }
  *       market {
+ *         marketId
  *         collateralAsset { decimals }
  *         loanAsset { decimals }
  *       }
@@ -100,9 +107,15 @@ const MARKET_QUERY = `
  * }
  */
 const POSITION_QUERY = `
-  query UserPosition($address: String!, $chainId: Int!, $marketKey: String!) {
-    userByAddress(chainId: $chainId, address: $address) {
-      marketPositions(where: { marketUniqueKey_in: [$marketKey] }) {
+  query UserPosition($address: String!, $marketKey: String!) {
+    marketPositions(
+      first: 10
+      where: {
+        marketUniqueKey_in: [$marketKey]
+        userAddress_in: [$address]
+      }
+    ) {
+      items {
         state {
           collateral
           borrowAssets
@@ -110,6 +123,7 @@ const POSITION_QUERY = `
           collateralUsd
         }
         market {
+          marketId
           collateralAsset { decimals }
           loanAsset { decimals }
         }
@@ -144,8 +158,8 @@ interface MarketQueryResult {
 }
 
 interface PositionQueryResult {
-  userByAddress: {
-    marketPositions: Array<{
+  marketPositions: {
+    items: Array<{
       state: {
         collateral: string
         borrowAssets: string
@@ -153,11 +167,12 @@ interface PositionQueryResult {
         collateralUsd: number
       }
       market: {
+        marketId: string
         collateralAsset: { decimals: number }
         loanAsset: { decimals: number }
       }
     }>
-  } | null
+  }
 }
 
 interface PriceQueryResult {
@@ -213,18 +228,23 @@ export async function fetchUserPosition(address: string): Promise<Position> {
   const [positionData, marketData] = await Promise.all([
     graphqlQuery<PositionQueryResult>(POSITION_QUERY, {
       address,
-      chainId: BASE_CHAIN_ID,
       marketKey: MARKET_UNIQUE_KEY,
     }),
     fetchMarketData(),
   ])
 
-  const user = positionData.userByAddress
-  if (!user?.marketPositions?.length) {
+  const positions = positionData.marketPositions?.items ?? []
+  const pos = positions.find((p) => p.market.marketId === MARKET_UNIQUE_KEY) ?? positions[0]
+
+  if (!pos) {
     throw new Error('No position found for this address in the cbBTC-USDC market')
   }
 
-  const pos = user.marketPositions[0]
+  const hasActivity =
+    Number(pos.state.collateral) > 0 || Number(pos.state.borrowAssets) > 0
+  if (!hasActivity) {
+    throw new Error('No active cbBTC-USDC position found for this address on Base')
+  }
   const collateralDecimals = pos.market.collateralAsset.decimals
   const loanDecimals = pos.market.loanAsset.decimals
 
