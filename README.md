@@ -35,7 +35,9 @@ Live URL: `https://mcoronel814.github.io/morphoBTCadvisor/`
 
 ### One-time setup
 
-1. **Enable Pages** — Repo → Settings → Pages → Build and deployment → Source: **GitHub Actions**
+1. **Enable Pages (important!)** — Repo → Settings → Pages → Build and deployment → Source: **GitHub Actions**
+   - If set to "Deploy from a branch", the site will show a **blank white screen** (it serves unbuilt source files)
+   - You must select **GitHub Actions**, not a branch
 2. **Add secret** — Repo → Settings → Secrets and variables → Actions → New repository secret:
    - Name: `VITE_WALLETCONNECT_PROJECT_ID`
    - Value: your project ID from [cloud.walletconnect.com](https://cloud.walletconnect.com)
