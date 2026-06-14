@@ -29,6 +29,29 @@ npm run build
 npm run preview
 ```
 
+## Deploy to GitHub Pages
+
+Live URL: `https://mcoronel814.github.io/morphoBTCadvisor/`
+
+### One-time setup
+
+1. **Enable Pages** — Repo → Settings → Pages → Build and deployment → Source: **GitHub Actions**
+2. **Add secret** — Repo → Settings → Secrets and variables → Actions → New repository secret:
+   - Name: `VITE_WALLETCONNECT_PROJECT_ID`
+   - Value: your project ID from [cloud.walletconnect.com](https://cloud.walletconnect.com)
+3. **Allow your domain** — In WalletConnect Cloud, add this to **Allowed Origins**:
+   - `https://mcoronel814.github.io`
+
+### Deploy
+
+Push to `main` — the workflow in `.github/workflows/deploy.yml` builds and deploys automatically.
+
+```bash
+git push origin main
+```
+
+Local dev uses `/` as base path. Production builds use `/morphoBTCadvisor/` automatically via `VITE_BASE_PATH`.
+
 ## Connect Wallet on Base
 
 1. Click **Connect Wallet** in the header

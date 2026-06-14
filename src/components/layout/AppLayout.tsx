@@ -1,6 +1,7 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit'
-import { Bitcoin } from 'lucide-react'
+import { Bitcoin, ShieldCheck } from 'lucide-react'
 import type { ReactNode } from 'react'
+import { Badge } from '@/components/ui/badge'
 import { Disclaimer } from './Disclaimer'
 import { Nav } from './Nav'
 import { PositionBar } from './PositionBar'
@@ -21,7 +22,13 @@ export function AppLayout({ children }: { children: ReactNode }) {
               <p className="text-xs text-muted-foreground">cbBTC-USDC on Base</p>
             </div>
           </div>
-          <ConnectButton chainStatus="icon" showBalance={false} />
+          <div className="flex items-center gap-2">
+            <Badge variant="safe" className="hidden gap-1 sm:inline-flex">
+              <ShieldCheck className="h-3 w-3" />
+              Read-only
+            </Badge>
+            <ConnectButton chainStatus="icon" showBalance={false} />
+          </div>
         </div>
       </header>
 

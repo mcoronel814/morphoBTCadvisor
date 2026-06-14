@@ -6,9 +6,11 @@ export function Disclaimer() {
       <div className="flex items-start gap-2">
         <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-caution" />
         <p>
-          <strong className="text-foreground">Not financial advice.</strong> DeFi involves smart
-          contract risk, liquidation risk, oracle risk, and variable rates. Always DYOR before
-          making decisions.
+          <strong className="text-foreground">Not financial advice.</strong> This app is{' '}
+          <strong className="text-foreground">read-only</strong> — it never requests transaction
+          signatures or access to your funds. Wallet connect only shares your public address to
+          load on-chain position data. DeFi involves smart contract risk, liquidation risk, oracle
+          risk, and variable rates. Always DYOR before making decisions.
         </p>
       </div>
     </div>
