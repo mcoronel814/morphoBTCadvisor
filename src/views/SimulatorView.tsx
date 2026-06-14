@@ -16,7 +16,8 @@ import {
   LtvYAxis,
   MonthsXAxis,
   UsdYAxis,
-  YearsXAxis,
+  CalendarYearXAxis,
+  monthIndexToCalendarYear,
 } from '@/components/charts/chart-axes'
 import { SectionGuide } from '@/components/layout/SectionGuide'
 import { Button } from '@/components/ui/button'
@@ -85,7 +86,7 @@ export function SimulatorView() {
     if (!scenarios.length) return []
     const maxMonths = scenarios[0].months.length
     return Array.from({ length: maxMonths }, (_, i) => {
-      const point: Record<string, number | string> = { year: (i + 1) / 12 }
+      const point: Record<string, number | string> = { year: monthIndexToCalendarYear(i) }
       for (const s of scenarios) {
         const m = s.months[i]
         if (m) {
@@ -428,7 +429,7 @@ export function SimulatorView() {
         <CardHeader>
           <CardTitle className="text-base">LTV Trajectory</CardTitle>
           <p className="text-xs text-muted-foreground">
-            X-axis: years from today. Y-axis: loan-to-value (%). Lower lines are safer; rising LTV
+            X-axis: calendar year. Y-axis: loan-to-value (%). Lower lines are safer; rising LTV
             means your loan is getting riskier relative to collateral.
           </p>
         </CardHeader>
@@ -437,7 +438,7 @@ export function SimulatorView() {
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={chartData} margin={CHART_MARGIN_WITH_LEGEND}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-                <YearsXAxis horizonYears={settings.timeHorizonYears} />
+                <CalendarYearXAxis horizonYears={settings.timeHorizonYears} />
                 <LtvYAxis domain={[0, 90]} />
                 <RechartsTooltip
                   contentStyle={{
@@ -445,9 +446,7 @@ export function SimulatorView() {
                     border: '1px solid #1e293b',
                     borderRadius: '8px',
                   }}
-                  labelFormatter={(year) =>
-                    Number(year) === 0 ? 'Now' : `Year ${Number(year).toFixed(1).replace(/\.0$/, '')}`
-                  }
+                  labelFormatter={(year) => String(Math.round(Number(year)))}
                 />
                 <Legend {...COMPACT_LEGEND} />
                 {scenarios.map((s) => (
@@ -471,7 +470,7 @@ export function SimulatorView() {
         <CardHeader>
           <CardTitle className="text-base">Net Equity Projection</CardTitle>
           <p className="text-xs text-muted-foreground">
-            X-axis: years from today. Y-axis: net equity in USD (collateral value minus debt). This
+            X-axis: calendar year. Y-axis: net equity in USD (collateral value minus debt). This
             is what you would keep after paying off the loan at each point in time.
           </p>
         </CardHeader>
@@ -480,7 +479,7 @@ export function SimulatorView() {
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={chartData} margin={CHART_MARGIN_WITH_LEGEND}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-                <YearsXAxis horizonYears={settings.timeHorizonYears} />
+                <CalendarYearXAxis horizonYears={settings.timeHorizonYears} />
                 <UsdYAxis tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`} />
                 <RechartsTooltip
                   contentStyle={{
@@ -488,9 +487,7 @@ export function SimulatorView() {
                     border: '1px solid #1e293b',
                     borderRadius: '8px',
                   }}
-                  labelFormatter={(year) =>
-                    Number(year) === 0 ? 'Now' : `Year ${Number(year).toFixed(1).replace(/\.0$/, '')}`
-                  }
+                  labelFormatter={(year) => String(Math.round(Number(year)))}
                   formatter={(value) => formatUsd(Number(value ?? 0))}
                 />
                 <Legend {...COMPACT_LEGEND} />

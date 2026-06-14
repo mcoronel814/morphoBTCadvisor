@@ -31,24 +31,35 @@ export function MonthsXAxis(props: Omit<XAxisProps, 'dataKey'> & { dataKey?: str
   )
 }
 
-export function YearsXAxis(
+export function getSimulationStartYear(): number {
+  return new Date().getFullYear()
+}
+
+export function monthIndexToCalendarYear(monthIndex: number): number {
+  return getSimulationStartYear() + (monthIndex + 1) / 12
+}
+
+export function CalendarYearXAxis(
   props: Omit<XAxisProps, 'dataKey'> & { dataKey?: string; horizonYears?: number },
 ) {
   const { dataKey = 'year', horizonYears, ...rest } = props
+  const startYear = getSimulationStartYear()
   const ticks =
     horizonYears !== undefined
-      ? Array.from({ length: horizonYears + 1 }, (_, i) => i)
+      ? Array.from({ length: horizonYears + 1 }, (_, i) => startYear + i)
       : undefined
 
   return (
     <XAxis
       dataKey={dataKey}
+      type="number"
+      domain={['dataMin', 'dataMax']}
       tick={{ fontSize: 11 }}
       stroke="#64748b"
       ticks={ticks}
-      tickFormatter={(v) => (v === 0 ? 'Now' : `${v}y`)}
+      tickFormatter={(v) => String(Math.round(Number(v)))}
       label={{
-        value: 'Years from now',
+        value: 'Year',
         position: 'insideBottom',
         offset: -12,
         style: axisLabelStyle,
