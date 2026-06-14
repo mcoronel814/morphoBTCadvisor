@@ -15,19 +15,15 @@ import {
   loadMarket,
   loadPosition,
   loadSettings,
-  loadSnapshots,
   saveMarket,
   savePosition,
   saveSettings,
-  saveSnapshot,
   setOnboardingDone,
 } from '@/lib/storage'
-import { generateId } from '@/lib/utils'
 import type {
   MarketData,
   Position,
   PositionMetrics,
-  Snapshot,
   TabId,
   UserSettings,
 } from '@/lib/types'
@@ -36,7 +32,6 @@ interface AppState {
   position: Position | null
   market: MarketData | null
   settings: UserSettings
-  snapshots: Snapshot[]
   metrics: PositionMetrics | null
   activeTab: TabId
   loading: boolean
@@ -49,7 +44,6 @@ interface AppContextValue extends AppState {
   loadFromWallet: (address: string) => Promise<void>
   loadManual: (collateralBtc: number, debtUsdc: number, btcPrice?: number) => void
   refreshMarket: () => Promise<void>
-  takeSnapshot: () => void
   updateSettings: (partial: Partial<UserSettings>) => void
   clearPosition: () => void
   loadExample: () => void
@@ -62,7 +56,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [position, setPosition] = useState<Position | null>(() => loadPosition())
   const [market, setMarket] = useState<MarketData | null>(() => loadMarket())
   const [settings, setSettings] = useState<UserSettings>(() => loadSettings())
-  const [snapshots, setSnapshots] = useState<Snapshot[]>(() => loadSnapshots())
   const [activeTab, setActiveTab] = useState<TabId>('dashboard')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -126,22 +119,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
     [market, settings.btcPriceOverride],
   )
 
-  const takeSnapshot = useCallback(() => {
-    if (!position || !metrics) return
-    const snapshot: Snapshot = {
-      id: generateId(),
-      timestamp: Date.now(),
-      collateralBtc: position.collateralBtc,
-      debtUsdc: position.debtUsdc,
-      btcPrice: position.btcPrice,
-      ltv: metrics.ltv,
-      healthFactor: metrics.healthFactor,
-      borrowApy,
-    }
-    saveSnapshot(snapshot)
-    setSnapshots((prev) => [snapshot, ...prev].slice(0, 100))
-  }, [position, metrics, borrowApy])
-
   const updateSettings = useCallback((partial: Partial<UserSettings>) => {
     setSettings((prev) => {
       const next = { ...prev, ...partial }
@@ -170,7 +147,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
     position,
     market,
     settings,
-    snapshots,
     metrics,
     activeTab,
     loading,
@@ -180,7 +156,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
     loadFromWallet,
     loadManual,
     refreshMarket,
-    takeSnapshot,
     updateSettings,
     clearPosition,
     loadExample,

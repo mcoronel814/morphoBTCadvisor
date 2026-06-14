@@ -23,8 +23,8 @@ export function Onboarding() {
         <ol className="list-decimal space-y-2 pl-5 text-sm text-muted-foreground">
           <li>Load your position via wallet connection or paste your address</li>
           <li>Or enter collateral/debt manually for quick what-if analysis</li>
-          <li>Take snapshots to track LTV over time</li>
-          <li>Use the Simulator and Advisor tabs to plan your strategy</li>
+          <li>Use the Simulator and Advisor tabs to plan your long-term strategy</li>
+          <li>Use the What-If tab to test borrowing or repaying before you act on-chain</li>
         </ol>
         <div className="rounded-lg bg-card p-3 text-sm">
           <p className="font-medium">Example position:</p>

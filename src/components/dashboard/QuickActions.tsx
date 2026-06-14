@@ -1,26 +1,9 @@
-import { Camera, FlaskConical, Target } from 'lucide-react'
+import { FlaskConical, Target } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { useApp } from '@/context/AppContext'
-import type { TabId } from '@/lib/types'
 
-const actions: Array<{
-  id: string
-  icon: typeof Camera
-  title: string
-  description: string
-  buttonLabel: string
-  tab: TabId | null
-}> = [
-  {
-    id: 'snapshot',
-    icon: Camera,
-    title: 'Take Snapshot',
-    description:
-      'Save a point-in-time record of your LTV and health factor. Snapshots build your history chart so you can see whether your loan is getting safer or riskier over weeks and months.',
-    buttonLabel: 'Save snapshot',
-    tab: null,
-  },
+const actions = [
   {
     id: 'borrow-more',
     icon: FlaskConical,
@@ -28,7 +11,7 @@ const actions: Array<{
     description:
       'Open the What-If Lab to model extra borrowing before you do it on-chain. Slide how much USDC you would add and instantly see the impact on LTV, health factor, and liquidation distance.',
     buttonLabel: 'Try in What-If',
-    tab: 'scenarios',
+    tab: 'scenarios' as const,
   },
   {
     id: 'optimize',
@@ -37,15 +20,15 @@ const actions: Array<{
     description:
       'See exactly how much to borrow, repay, or add in collateral to hit your personal target LTV. Use this as a planning guide — you still execute trades yourself in Morpho.',
     buttonLabel: 'Open optimizer',
-    tab: 'scenarios',
+    tab: 'scenarios' as const,
   },
 ]
 
 export function QuickActions() {
-  const { takeSnapshot, setActiveTab } = useApp()
+  const { setActiveTab } = useApp()
 
   return (
-    <div className="grid gap-3 sm:grid-cols-3">
+    <div className="grid gap-3 sm:grid-cols-2">
       {actions.map(({ id, icon: Icon, title, description, buttonLabel, tab }) => (
         <Card key={id} className="border-border/80">
           <CardContent className="flex h-full flex-col gap-3 p-4">
@@ -62,7 +45,7 @@ export function QuickActions() {
               variant="outline"
               size="sm"
               className="mt-auto w-full"
-              onClick={() => (tab ? setActiveTab(tab) : takeSnapshot())}
+              onClick={() => setActiveTab(tab)}
             >
               <Icon className="h-4 w-4" />
               {buttonLabel}

@@ -2,6 +2,15 @@ import { XAxis, YAxis, type XAxisProps, type YAxisProps } from 'recharts'
 
 export const CHART_MARGIN = { top: 8, right: 16, left: 4, bottom: 28 }
 
+export const CHART_MARGIN_WITH_LEGEND = { top: 36, right: 16, left: 4, bottom: 32 }
+
+export const COMPACT_LEGEND = {
+  verticalAlign: 'top' as const,
+  align: 'right' as const,
+  iconSize: 8,
+  wrapperStyle: { fontSize: 11, lineHeight: '14px', paddingBottom: 4 },
+}
+
 const axisLabelStyle = { fill: '#94a3b8', fontSize: 11 }
 
 export function MonthsXAxis(props: Omit<XAxisProps, 'dataKey'> & { dataKey?: string }) {
@@ -22,15 +31,24 @@ export function MonthsXAxis(props: Omit<XAxisProps, 'dataKey'> & { dataKey?: str
   )
 }
 
-export function DateXAxis(props: Omit<XAxisProps, 'dataKey'> & { dataKey?: string }) {
-  const { dataKey = 'date', ...rest } = props
+export function YearsXAxis(
+  props: Omit<XAxisProps, 'dataKey'> & { dataKey?: string; horizonYears?: number },
+) {
+  const { dataKey = 'year', horizonYears, ...rest } = props
+  const ticks =
+    horizonYears !== undefined
+      ? Array.from({ length: horizonYears + 1 }, (_, i) => i)
+      : undefined
+
   return (
     <XAxis
       dataKey={dataKey}
       tick={{ fontSize: 11 }}
       stroke="#64748b"
+      ticks={ticks}
+      tickFormatter={(v) => (v === 0 ? 'Now' : `${v}y`)}
       label={{
-        value: 'Snapshot date',
+        value: 'Years from now',
         position: 'insideBottom',
         offset: -12,
         style: axisLabelStyle,

@@ -57,7 +57,6 @@ export const EXAMPLE_POSITION = {
 export const STORAGE_KEYS = {
   position: 'mba-position',
   market: 'mba-market',
-  snapshots: 'mba-snapshots',
   settings: 'mba-settings',
   playbook: 'mba-playbook',
   onboarding: 'mba-onboarding-done',

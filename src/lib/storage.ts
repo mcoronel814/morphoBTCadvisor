@@ -4,7 +4,6 @@ import type {
   MarketData,
   Playbook,
   Position,
-  Snapshot,
   UserSettings,
 } from './types'
 
@@ -54,16 +53,6 @@ export function loadMarket(): MarketData | null {
 
 export function saveMarket(market: MarketData): void {
   save(STORAGE_KEYS.market, market)
-}
-
-export function loadSnapshots(): Snapshot[] {
-  return load<Snapshot[]>(STORAGE_KEYS.snapshots, [])
-}
-
-export function saveSnapshot(snapshot: Snapshot): void {
-  const snapshots = loadSnapshots()
-  snapshots.unshift(snapshot)
-  save(STORAGE_KEYS.snapshots, snapshots.slice(0, 100))
 }
 
 export function loadSettings(): UserSettings {

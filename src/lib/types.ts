@@ -29,17 +29,6 @@ export interface PositionMetrics {
   isHealthy: boolean
 }
 
-export interface Snapshot {
-  id: string
-  timestamp: number
-  collateralBtc: number
-  debtUsdc: number
-  btcPrice: number
-  ltv: number
-  healthFactor: number
-  borrowApy: number
-}
-
 export type RiskProfile = 'safe' | 'balanced' | 'aggressive'
 
 export type SimulationMode = 'cagr' | 'power-law'

@@ -5,7 +5,6 @@ import { MarketPanel } from '@/components/dashboard/MarketPanel'
 import { Onboarding } from '@/components/dashboard/Onboarding'
 import { PositionLoader } from '@/components/dashboard/PositionLoader'
 import { QuickActions } from '@/components/dashboard/QuickActions'
-import { SnapshotHistory } from '@/components/dashboard/SnapshotHistory'
 import { EducationPanel } from '@/components/layout/EducationPanel'
 import { SectionGuide } from '@/components/layout/SectionGuide'
 import { useApp } from '@/context/AppContext'
@@ -57,8 +56,8 @@ export function DashboardView() {
           page regularly, especially after big BTC moves or when you borrow more.
         </p>
         <p>
-          Use the quick actions below to save history, test changes safely, or plan how to reach
-          your target LTV. Nothing here moves funds; it only helps you understand and plan.
+          Use the planning tools below to test changes safely or work toward your target LTV.
+          Nothing here moves funds; it only helps you understand and plan.
         </p>
       </SectionGuide>
 
@@ -109,12 +108,7 @@ export function DashboardView() {
         </div>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        <div className="lg:col-span-2">
-          <SnapshotHistory />
-        </div>
-        <MarketPanel />
-      </div>
+      <MarketPanel />
 
       <EducationPanel />
       <PositionLoader />

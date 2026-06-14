@@ -11,9 +11,12 @@ import { BarChart3, Info, TrendingUp } from 'lucide-react'
 import {
   BtcPriceYAxis,
   CHART_MARGIN,
+  CHART_MARGIN_WITH_LEGEND,
+  COMPACT_LEGEND,
   LtvYAxis,
   MonthsXAxis,
   UsdYAxis,
+  YearsXAxis,
 } from '@/components/charts/chart-axes'
 import { SectionGuide } from '@/components/layout/SectionGuide'
 import { Button } from '@/components/ui/button'
@@ -82,7 +85,7 @@ export function SimulatorView() {
     if (!scenarios.length) return []
     const maxMonths = scenarios[0].months.length
     return Array.from({ length: maxMonths }, (_, i) => {
-      const point: Record<string, number | string> = { month: i + 1 }
+      const point: Record<string, number | string> = { year: (i + 1) / 12 }
       for (const s of scenarios) {
         const m = s.months[i]
         if (m) {
@@ -425,16 +428,16 @@ export function SimulatorView() {
         <CardHeader>
           <CardTitle className="text-base">LTV Trajectory</CardTitle>
           <p className="text-xs text-muted-foreground">
-            X-axis: months from today. Y-axis: loan-to-value (%). Lower lines are safer; rising LTV
+            X-axis: years from today. Y-axis: loan-to-value (%). Lower lines are safer; rising LTV
             means your loan is getting riskier relative to collateral.
           </p>
         </CardHeader>
         <CardContent>
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={chartData} margin={CHART_MARGIN}>
+              <LineChart data={chartData} margin={CHART_MARGIN_WITH_LEGEND}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-                <MonthsXAxis />
+                <YearsXAxis horizonYears={settings.timeHorizonYears} />
                 <LtvYAxis domain={[0, 90]} />
                 <RechartsTooltip
                   contentStyle={{
@@ -442,8 +445,11 @@ export function SimulatorView() {
                     border: '1px solid #1e293b',
                     borderRadius: '8px',
                   }}
+                  labelFormatter={(year) =>
+                    Number(year) === 0 ? 'Now' : `Year ${Number(year).toFixed(1).replace(/\.0$/, '')}`
+                  }
                 />
-                <Legend />
+                <Legend {...COMPACT_LEGEND} />
                 {scenarios.map((s) => (
                   <Line
                     key={s.name}
@@ -465,16 +471,16 @@ export function SimulatorView() {
         <CardHeader>
           <CardTitle className="text-base">Net Equity Projection</CardTitle>
           <p className="text-xs text-muted-foreground">
-            X-axis: months from today. Y-axis: net equity in USD (collateral value minus debt). This
+            X-axis: years from today. Y-axis: net equity in USD (collateral value minus debt). This
             is what you would keep after paying off the loan at each point in time.
           </p>
         </CardHeader>
         <CardContent>
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={chartData} margin={CHART_MARGIN}>
+              <LineChart data={chartData} margin={CHART_MARGIN_WITH_LEGEND}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-                <MonthsXAxis />
+                <YearsXAxis horizonYears={settings.timeHorizonYears} />
                 <UsdYAxis tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`} />
                 <RechartsTooltip
                   contentStyle={{
@@ -482,9 +488,12 @@ export function SimulatorView() {
                     border: '1px solid #1e293b',
                     borderRadius: '8px',
                   }}
+                  labelFormatter={(year) =>
+                    Number(year) === 0 ? 'Now' : `Year ${Number(year).toFixed(1).replace(/\.0$/, '')}`
+                  }
                   formatter={(value) => formatUsd(Number(value ?? 0))}
                 />
-                <Legend />
+                <Legend {...COMPACT_LEGEND} />
                 {scenarios.map((s) => (
                   <Line
                     key={s.name}
