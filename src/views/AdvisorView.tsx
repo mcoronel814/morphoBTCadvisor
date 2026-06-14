@@ -2,13 +2,13 @@ import { useMemo, useState } from 'react'
 import {
   LineChart,
   Line,
-  XAxis,
-  YAxis,
   Tooltip as RechartsTooltip,
   ResponsiveContainer,
   CartesianGrid,
 } from 'recharts'
 import { Download, Sparkles } from 'lucide-react'
+import { CHART_MARGIN, LtvAndHfYAxis, MonthsXAxis } from '@/components/charts/chart-axes'
+import { SectionGuide } from '@/components/layout/SectionGuide'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -78,6 +78,24 @@ export function AdvisorView() {
 
   return (
     <div className="space-y-6 print:space-y-4">
+      <SectionGuide title="Your personalized loan playbook" icon={Sparkles} defaultOpen>
+        <p>
+          The Advisor turns your numbers into a month-by-month action plan. Pick a risk profile
+          (conservative, balanced, or aggressive), set your target LTV, and generate a playbook that
+          suggests when to borrow, repay, or add collateral.
+        </p>
+        <p>
+          Think of it as a coach for your loan — not automatic trading. You review each month&apos;s
+          recommendation, then decide whether to act in Morpho. Export or print the plan to revisit
+          during volatile markets.
+        </p>
+        <p>
+          The stress test below answers an urgent question: if BTC dropped sharply tomorrow, would
+          you be liquidated, and how much would you need to repay or add to get back to your target
+          LTV?
+        </p>
+      </SectionGuide>
+
       <Card>
         <CardHeader>
           <CardTitle className="text-base">Risk Profile</CardTitle>
@@ -210,14 +228,18 @@ export function AdvisorView() {
           <Card>
             <CardHeader>
               <CardTitle className="text-base">5-Year LTV Projection</CardTitle>
+              <p className="text-xs text-muted-foreground">
+                X-axis: months from now. Y-axis: projected LTV (%) in orange and health factor in
+                green. Health factor above 1.0 means you are not liquidatable.
+              </p>
             </CardHeader>
             <CardContent>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={projectionData}>
+                  <LineChart data={projectionData} margin={CHART_MARGIN}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-                    <XAxis dataKey="month" tick={{ fontSize: 11 }} stroke="#64748b" />
-                    <YAxis tick={{ fontSize: 11 }} stroke="#64748b" />
+                    <MonthsXAxis />
+                    <LtvAndHfYAxis />
                     <RechartsTooltip
                       contentStyle={{
                         background: '#111827',

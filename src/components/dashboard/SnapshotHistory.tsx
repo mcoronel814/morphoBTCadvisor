@@ -2,11 +2,10 @@ import { Camera, Download } from 'lucide-react'
 import {
   LineChart,
   Line,
-  XAxis,
-  YAxis,
   Tooltip as RechartsTooltip,
   ResponsiveContainer,
 } from 'recharts'
+import { CHART_MARGIN, DateXAxis, LtvYAxis } from '@/components/charts/chart-axes'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useApp } from '@/context/AppContext'
@@ -24,7 +23,9 @@ export function SnapshotHistory() {
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground">
-            Take snapshots to track your LTV over time.
+            Tap &quot;Save snapshot&quot; on the Dashboard after you borrow, repay, or when BTC moves
+            a lot. Each snapshot becomes a point on your history chart so you can see if your loan
+            is trending safer or riskier.
           </p>
         </CardContent>
       </Card>
@@ -57,11 +58,14 @@ export function SnapshotHistory() {
         </div>
       </CardHeader>
       <CardContent>
+        <p className="mb-3 text-xs text-muted-foreground">
+          X-axis: date you saved each snapshot. Y-axis: LTV (%) at that moment.
+        </p>
         <div className="h-48">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData}>
-              <XAxis dataKey="date" tick={{ fontSize: 11 }} stroke="#64748b" />
-              <YAxis tick={{ fontSize: 11 }} stroke="#64748b" domain={[0, 100]} />
+            <LineChart data={chartData} margin={CHART_MARGIN}>
+              <DateXAxis />
+              <LtvYAxis domain={[0, 100]} />
               <RechartsTooltip
                 contentStyle={{
                   background: '#111827',

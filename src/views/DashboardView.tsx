@@ -1,12 +1,13 @@
-import { Camera, FlaskConical, Target } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { LayoutDashboard } from 'lucide-react'
 import { LTVGauge } from '@/components/dashboard/LTVGauge'
 import { MetricCard } from '@/components/dashboard/MetricCard'
 import { MarketPanel } from '@/components/dashboard/MarketPanel'
 import { Onboarding } from '@/components/dashboard/Onboarding'
 import { PositionLoader } from '@/components/dashboard/PositionLoader'
+import { QuickActions } from '@/components/dashboard/QuickActions'
 import { SnapshotHistory } from '@/components/dashboard/SnapshotHistory'
 import { EducationPanel } from '@/components/layout/EducationPanel'
+import { SectionGuide } from '@/components/layout/SectionGuide'
 import { useApp } from '@/context/AppContext'
 import { optimizeToTargetLtv } from '@/lib/calculations'
 import { formatBtc, formatPercent, formatUsd } from '@/lib/utils'
@@ -17,8 +18,6 @@ export function DashboardView() {
     metrics,
     settings,
     showOnboarding,
-    takeSnapshot,
-    setActiveTab,
     market,
   } = useApp()
 
@@ -45,20 +44,25 @@ export function DashboardView() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap gap-2">
-        <Button onClick={takeSnapshot} variant="outline" size="sm">
-          <Camera className="h-4 w-4" />
-          Take Snapshot
-        </Button>
-        <Button onClick={() => setActiveTab('scenarios')} variant="outline" size="sm">
-          <FlaskConical className="h-4 w-4" />
-          What if I borrow more?
-        </Button>
-        <Button onClick={() => setActiveTab('scenarios')} variant="outline" size="sm">
-          <Target className="h-4 w-4" />
-          Optimize to target LTV
-        </Button>
-      </div>
+      <SectionGuide title="Your position at a glance" icon={LayoutDashboard} defaultOpen>
+        <p>
+          This is your home base. Connect your wallet to load your live Morpho cbBTC-USDC loan on
+          Base, then watch your <strong className="text-foreground">LTV</strong> (how leveraged you
+          are) and <strong className="text-foreground">health factor</strong> (how close you are to
+          liquidation).
+        </p>
+        <p>
+          A loan against your Bitcoin is powerful — you keep your BTC while accessing USDC — but if
+          BTC falls or debt grows too fast, you can be liquidated and lose collateral. Check this
+          page regularly, especially after big BTC moves or when you borrow more.
+        </p>
+        <p>
+          Use the quick actions below to save history, test changes safely, or plan how to reach
+          your target LTV. Nothing here moves funds; it only helps you understand and plan.
+        </p>
+      </SectionGuide>
+
+      <QuickActions />
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="flex items-center justify-center rounded-xl border border-border bg-card p-6 lg:col-span-1">

@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
-import { Shield, TrendingDown, TrendingUp, Zap } from 'lucide-react'
+import { FlaskConical, Shield, TrendingDown, TrendingUp, Zap } from 'lucide-react'
+import { SectionGuide } from '@/components/layout/SectionGuide'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
@@ -100,22 +101,72 @@ export function ScenariosView() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap gap-2">
-        <Button variant="outline" size="sm" onClick={() => applyPreset('volatility')}>
-          <Shield className="h-4 w-4" />
-          Prepare for volatility
-        </Button>
-        <Button variant="outline" size="sm" onClick={() => applyPreset('max-credit')}>
-          <Zap className="h-4 w-4" />
-          Maximize credit line
-        </Button>
-        <Button variant="outline" size="sm" onClick={() => applyPreset('deleverage')}>
-          <TrendingDown className="h-4 w-4" />
-          Deleverage after dip
-        </Button>
-        <Button variant="ghost" size="sm" onClick={() => applyPreset('reset')}>
-          Reset
-        </Button>
+      <SectionGuide title="What-If Lab: test before you act" icon={FlaskConical} defaultOpen>
+        <p>
+          Every slider here changes your position in a safe sandbox — nothing is sent to the blockchain.
+          Drag BTC price up or down, add borrowing, deposit more collateral, or simulate a repayment
+          and watch your LTV gauge update instantly.
+        </p>
+        <p>
+          This is the right place to answer questions like &quot;Can I afford to borrow another
+          $10,000?&quot; or &quot;What happens if BTC drops 30% tonight?&quot; before you make
+          irreversible moves. The optimizer at the bottom tells you the exact borrow, repay, or
+          collateral amount to reach your target LTV.
+        </p>
+      </SectionGuide>
+
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <button
+          type="button"
+          onClick={() => applyPreset('volatility')}
+          className="rounded-lg border border-border bg-card p-3 text-left hover:bg-accent/50 transition-colors"
+        >
+          <div className="flex items-center gap-2 text-sm font-medium">
+            <Shield className="h-4 w-4 text-primary" />
+            Prepare for volatility
+          </div>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Models a 30% BTC drop to see if your current debt level is safe enough.
+          </p>
+        </button>
+        <button
+          type="button"
+          onClick={() => applyPreset('max-credit')}
+          className="rounded-lg border border-border bg-card p-3 text-left hover:bg-accent/50 transition-colors"
+        >
+          <div className="flex items-center gap-2 text-sm font-medium">
+            <Zap className="h-4 w-4 text-btc" />
+            Maximize credit line
+          </div>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Borrows up to your available limit so you can see the risk of using full capacity.
+          </p>
+        </button>
+        <button
+          type="button"
+          onClick={() => applyPreset('deleverage')}
+          className="rounded-lg border border-border bg-card p-3 text-left hover:bg-accent/50 transition-colors"
+        >
+          <div className="flex items-center gap-2 text-sm font-medium">
+            <TrendingDown className="h-4 w-4 text-safe" />
+            Deleverage after dip
+          </div>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Combines a 20% price dip with repaying 20% of debt — a common recovery playbook.
+          </p>
+        </button>
+        <button
+          type="button"
+          onClick={() => applyPreset('reset')}
+          className="rounded-lg border border-border bg-card p-3 text-left hover:bg-accent/50 transition-colors"
+        >
+          <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+            Reset
+          </div>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Clears all sliders and returns to your live position numbers.
+          </p>
+        </button>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">

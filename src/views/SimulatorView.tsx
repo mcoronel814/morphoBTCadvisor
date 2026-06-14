@@ -2,14 +2,20 @@ import { useMemo, useState } from 'react'
 import {
   LineChart,
   Line,
-  XAxis,
-  YAxis,
   Tooltip as RechartsTooltip,
   ResponsiveContainer,
   Legend,
   CartesianGrid,
 } from 'recharts'
-import { Info, TrendingUp } from 'lucide-react'
+import { BarChart3, Info, TrendingUp } from 'lucide-react'
+import {
+  BtcPriceYAxis,
+  CHART_MARGIN,
+  LtvYAxis,
+  MonthsXAxis,
+  UsdYAxis,
+} from '@/components/charts/chart-axes'
+import { SectionGuide } from '@/components/layout/SectionGuide'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -123,6 +129,25 @@ export function SimulatorView() {
 
   return (
     <div className="space-y-6">
+      <SectionGuide title="Why use the Simulator?" icon={BarChart3} defaultOpen>
+        <p>
+          Borrowing against Bitcoin is a long game. The Simulator lets you look months or years ahead
+          without risking real money — so you can see how your LTV and net equity might evolve under
+          different BTC price paths, interest rates, and spending habits.
+        </p>
+        <p>
+          <strong className="text-foreground">CAGR mode</strong> uses simple annual growth rates
+          (conservative to bull). <strong className="text-foreground">Power Law mode</strong> uses
+          Bitcoin&apos;s historical price corridor (floor, fair, ceiling) to stress-test more
+          realistic long-term scenarios.
+        </p>
+        <p>
+          Adjust income, expenses, and horizon to match your life. If a scenario shows LTV climbing
+          toward danger, you have time to repay debt or add collateral before it happens for real.
+          The stress test at the bottom answers: &quot;What if BTC crashes X% at month Y?&quot;
+        </p>
+      </SectionGuide>
+
       <Card>
         <CardHeader>
           <CardTitle className="text-base">Price Model</CardTitle>
@@ -340,16 +365,18 @@ export function SimulatorView() {
         <Card>
           <CardHeader>
             <CardTitle className="text-base">Power Law Price Bands</CardTitle>
+            <p className="text-xs text-muted-foreground">
+              X-axis: months from today. Y-axis: projected BTC price (log scale). Three lines show
+              floor (support), fair (trend), and ceiling (resistance) bands.
+            </p>
           </CardHeader>
           <CardContent>
             <div className="h-72">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={powerLawPriceData}>
+                <LineChart data={powerLawPriceData} margin={CHART_MARGIN}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-                  <XAxis dataKey="month" tick={{ fontSize: 11 }} stroke="#64748b" />
-                  <YAxis
-                    tick={{ fontSize: 11 }}
-                    stroke="#64748b"
+                  <MonthsXAxis />
+                  <BtcPriceYAxis
                     tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
                     scale="log"
                     domain={['auto', 'auto']}
@@ -397,14 +424,18 @@ export function SimulatorView() {
       <Card>
         <CardHeader>
           <CardTitle className="text-base">LTV Trajectory</CardTitle>
+          <p className="text-xs text-muted-foreground">
+            X-axis: months from today. Y-axis: loan-to-value (%). Lower lines are safer; rising LTV
+            means your loan is getting riskier relative to collateral.
+          </p>
         </CardHeader>
         <CardContent>
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={chartData}>
+              <LineChart data={chartData} margin={CHART_MARGIN}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-                <XAxis dataKey="month" tick={{ fontSize: 11 }} stroke="#64748b" />
-                <YAxis tick={{ fontSize: 11 }} stroke="#64748b" domain={[0, 90]} />
+                <MonthsXAxis />
+                <LtvYAxis domain={[0, 90]} />
                 <RechartsTooltip
                   contentStyle={{
                     background: '#111827',
@@ -433,18 +464,18 @@ export function SimulatorView() {
       <Card>
         <CardHeader>
           <CardTitle className="text-base">Net Equity Projection</CardTitle>
+          <p className="text-xs text-muted-foreground">
+            X-axis: months from today. Y-axis: net equity in USD (collateral value minus debt). This
+            is what you would keep after paying off the loan at each point in time.
+          </p>
         </CardHeader>
         <CardContent>
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={chartData}>
+              <LineChart data={chartData} margin={CHART_MARGIN}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-                <XAxis dataKey="month" tick={{ fontSize: 11 }} stroke="#64748b" />
-                <YAxis
-                  tick={{ fontSize: 11 }}
-                  stroke="#64748b"
-                  tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`}
-                />
+                <MonthsXAxis />
+                <UsdYAxis tickFormatter={(v) => `$${(v / 1000).toFixed(0)}k`} />
                 <RechartsTooltip
                   contentStyle={{
                     background: '#111827',
@@ -474,11 +505,13 @@ export function SimulatorView() {
       <Card>
         <CardHeader>
           <CardTitle className="text-base">Stress Test</CardTitle>
+          <p className="text-xs text-muted-foreground">
+            Simulate a sudden BTC price drop at a specific month during your plan. Applied to{' '}
+            {isPowerLaw ? 'Fair (Regression)' : 'Balanced'} scenario. Use this to see if you would
+            survive a crash without being liquidated.
+          </p>
         </CardHeader>
         <CardContent className="space-y-4">
-          <p className="text-xs text-muted-foreground">
-            Applied to {isPowerLaw ? 'Fair (Regression)' : 'Balanced'} scenario
-          </p>
           <div className="space-y-2">
             <Label>BTC Crash: {stressCrash}%</Label>
             <Slider
